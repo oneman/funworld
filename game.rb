@@ -4,6 +4,8 @@
 # 2006 drr
 # all rights negated
 
+require 'gosu'
+
 require 'conf'
 require 'map'
 
@@ -12,11 +14,26 @@ require 'dragon'
 require 'ship'
 
 
-class Game
+class Game < Gosu::Window
+
   
   def initialize
-    print "Enter level name: "
-    mapfile = STDIN.gets.chomp
+
+    #print "Enter level name: "
+    #mapfile = STDIN.gets.chomp
+
+    #@fork = fork do
+    # while 1 == 1
+    #  turn
+    #  sleep 3
+    # end
+    # puts "fuck turn thread died"
+    #end
+
+
+
+    super(700, 700, false, 20)
+    mapfile = "yay"
     @map = YAML::load( File.open( "#{$root_dir}/maps/#{mapfile}.fmap" ) )
     @peices = []
     4.times do 
@@ -26,15 +43,18 @@ class Game
      @peices.push Ship.new(random_spot("water"))
      @peices.push Ship.new(random_spot("water"))
     end 
-    @fork = fork do
-     while 1 == 1
-      turn
-      sleep 3
-     end
-     puts "fuck turn thread died"
-    end
-    puts "forked turn thread pid: #{@fork}"
-    console
+    self.caption = "funworld woot"
+    @background_image = Gosu::Image.new(self, "#{$root_dir}/public/game.png", true)
+   # console
+  end
+
+  def draw
+    @background_image.draw(0, 0, 0);
+  end
+
+  def update
+     turn
+ sleep 2
   end
   
   def console
@@ -82,9 +102,12 @@ class Game
     map = Magick::Image.read("#{$root_dir}/maps/game.png").first
     @peices.each { |peice| map.composite!(peice.image, (peice.x * @map.tilesize), (peice.y * @map.tilesize), OverCompositeOp) }
     map.write("#{$root_dir}/public/game.png")  
+    @background_image = Gosu::Image.new(self, "#{$root_dir}/public/game.png", true)
+    @background_image.draw(0, 0, 0);
   end
   
 end
 
 
 game = Game.new
+game.show

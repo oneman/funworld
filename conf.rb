@@ -5,7 +5,7 @@
 # all rights negated
 
 $game = "funworld"
-$root_dir = "#{ENV['HOME']}/Fun/funworld"
+$root_dir = "#{ENV['HOME']}/Desktop/kode/funworld"
 $temp_map_name = "working_map"
 
 # defaults
