@@ -1,18 +1,16 @@
 class Ship < Idiot
 
-  def initialize(location)
-    @image = Magick::Image.read("#{$root_dir}/peices/ship.png").first
+  def initialize(location, window, name="ship")
+    @image = Gosu::Image.new(window, "#{$root_dir}/peices/ship.png", true)
     @x = location.split(",").first.to_i
     @y = location.split(",").last.to_i
-    @name = "ship"
+    @name = name
+    @tiletype = "water"
+    @font = Gosu::Font.new(window, Gosu::default_font_name, 20)
   end
   
-  def turn(map)
-    @map = map
-    location = move_spot("water")
-    @x = location.split(",").first.to_i
-    @y = location.split(",").last.to_i
-    return map
-  end
+
+
+
   
 end

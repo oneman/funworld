@@ -19,8 +19,8 @@ class Game < Gosu::Window
   
   def initialize
 
-    #print "Enter level name: "
-    #mapfile = STDIN.gets.chomp
+    print "Enter level name: "
+    mapfile = STDIN.gets.chomp
 
     #@fork = fork do
     # while 1 == 1
@@ -33,56 +33,47 @@ class Game < Gosu::Window
 
 
     super(700, 700, false, 20)
-    mapfile = "yay"
     @map = YAML::load( File.open( "#{$root_dir}/maps/#{mapfile}.fmap" ) )
     @peices = []
-    4.times do 
-      @peices.push Dragon.new(random_spot("land"))
-    end
-    2.times do
-     @peices.push Ship.new(random_spot("water"))
-     @peices.push Ship.new(random_spot("water"))
-    end 
+
+      @peices.push Dragon.new(random_spot("land"), self, "overkill")
+      @peices.push Dragon.new(random_spot("land"), self, "onemaN")
+
+
+     @peices.push Ship.new(random_spot("water"), self, "Monster")
+     @peices.push Ship.new(random_spot("water"), self, "Swift")
+     @peices.push Ship.new(random_spot("water"), self, "Ike")
+
+
     self.caption = "funworld woot"
-    @background_image = Gosu::Image.new(self, "#{$root_dir}/public/game.png", true)
+    @background_image = Gosu::Image.new(self, "#{$root_dir}/maps/#{mapfile}.png", true)
    # console
   end
 
   def draw
-    @background_image.draw(0, 0, 0);
+      update
   end
 
   def update
-     turn
- sleep 2
+    @background_image.draw(0, 0, 0);
+
+      #do a turn like every second
+      @counta ||= 1
+      if @counta == 1
+    @background_image.draw(0, 0, 0);
+         turn
+      end
+      @counta += 1
+      if @counta > (@map.tilesize * 2)
+         @counta = 1
+     end    
+    @peices.each { |peice| @map = peice.draw(@map) }
   end
   
-  def console
-    print "#{$game}> "
-    command = STDIN.gets.chomp
-    case command
-    when "q"
-      `kill -9 #{@fork}`
-      puts "buh bye"
-    when "h"
-      puts "i for investigation\nq to quit"
-      console
-    when "i"
-      investigate
-      console
-    else
-      puts "h for help"
-      console
-    end
-  end
-  
-  def investigate
-    @peices.each { |peice| puts "#{peice.name} at #{peice.x}, #{peice.y}" }   
-  end
   
   def turn
-    @peices.each { |peice| @map = peice.turn(@map) }
-    render
+    @peices.each { |peice| @map = peice.turn(@map, @peices) }
+    @peices.each { |peice| puts "#{peice.name} at #{peice.x}, #{peice.y}" }   
   end
   
   def random_spot(type)
@@ -96,15 +87,7 @@ class Game < Gosu::Window
     end  
     return "#{x},#{y}"
   end
-  
-  def render
-    @map.composite("game")
-    map = Magick::Image.read("#{$root_dir}/maps/game.png").first
-    @peices.each { |peice| map.composite!(peice.image, (peice.x * @map.tilesize), (peice.y * @map.tilesize), OverCompositeOp) }
-    map.write("#{$root_dir}/public/game.png")  
-    @background_image = Gosu::Image.new(self, "#{$root_dir}/public/game.png", true)
-    @background_image.draw(0, 0, 0);
-  end
+
   
 end
 
