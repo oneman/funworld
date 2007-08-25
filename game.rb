@@ -12,7 +12,7 @@ require 'map'
 require 'idiot'
 require 'dragon'
 require 'ship'
-
+require 'sagie'
 
 class Game < Gosu::Window
 
@@ -38,6 +38,7 @@ class Game < Gosu::Window
 
       @peices.push Dragon.new(random_spot("land"), self, "overkill")
       @peices.push Dragon.new(random_spot("land"), self, "onemaN")
+      @peices.push Sagie.new(random_spot("land"), self, "sage")
 
 
      @peices.push Ship.new(random_spot("water"), self, "Monster")
